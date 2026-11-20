@@ -9,7 +9,7 @@ import agent as agent_module
 from rag import list_uploaded_pdfs, delete_pdf
 import json
 from agent import agent, Command
-from langchain_core.messages import message_to_dict, messages_from_dict
+
 
 
 # ---------------- PAGE CONFIG ----------------
@@ -57,10 +57,7 @@ def save_current_conversation():
     conversations[thread_id] = {
         "title": first_question[:35],
         "messages": messages,
-        "agent_messages": [
-            message_to_dict(msg)
-            for msg in st.session_state.agent_messages
-        ]
+        "agent_messages": st.session_state.agent_messages
     }
 
     save_conversations(conversations)
@@ -404,9 +401,7 @@ with st.sidebar:
         ):
             st.session_state.thread_id = chat_id
             st.session_state.messages = chat_data["messages"]
-            st.session_state.agent_messages = messages_from_dict(
-                chat_data["agent_messages"]
-            )
+            st.session_state.agent_messages = chat_data.get("agent_messages", [])
             st.session_state.pending_approval = False
             st.session_state.approval_question = ""
     

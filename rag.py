@@ -145,7 +145,8 @@ def generate_rag_answers(vector_store , question , model):
 
 if __name__ == "__main__":
 
-    pdf_path = "/Users/pranavshukla/Downloads/data science/AgenticAI/LangGraph/agentic-ai-learning/documents/AIML:GenAI:AgenticAI.pdf"
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    pdf_path = os.path.join(BASE_DIR, "documents", "AIML:GenAI:AgenticAI.pdf")
 
     extracted_text = extract_text(pdf_path)
     chunks = split_text(extracted_text)

@@ -7,8 +7,11 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 import sqlite3
 import json
 import os
-from langchain_core.messages import trim_messages
+
 from langgraph.types import interrupt , Command
+
+
+
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -19,7 +22,12 @@ llm = ChatGoogleGenerativeAI(
 
 
 
-LTM_FILE = "/Users/pranavshukla/Downloads/data science/AgenticAI/LangGraph/agentic-ai-learning/data/LTM.json"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "data")
+DOCUMENTS_DIR = os.path.join(BASE_DIR, "documents")
+os.makedirs(DATA_DIR, exist_ok=True)
+
+LTM_FILE = os.path.join(DATA_DIR, "LTM.json")
 
 def load_memory():
 
@@ -143,14 +151,7 @@ def general_answer(state:AgentState):
             "content" : state["question"]
     })
 
-    trimmed_messages = trim_messages(
-        messages,
-        max_tokens=1000,
-        strategy='last',
-        token_counter='approximate',
-        include_system=True,
-        allow_partial=False
-    )
+    trimmed_messages = messages[-10:]
     print("Original Messages:", len(messages))
     print("Trimmed Messages:", len(trimmed_messages))
 
@@ -217,7 +218,11 @@ def approval_node(state: AgentState):
 
 def execute_action(state:AgentState):
 
-    reminder_files = "/Users/pranavshukla/Downloads/data science/AgenticAI/LangGraph/agentic-ai-learning/data/reminders.json"
+    reminder_files = os.path.join(DATA_DIR, "reminders.json")
+
+    if not os.path.exists(reminder_files):
+        with open(reminder_files, "w") as file:
+            json.dump([], file)
 
     with open(reminder_files , "r") as file:
         reminders = json.load(file)
@@ -272,7 +277,8 @@ def document_answer(state:AgentState):
 
 graph_builder = StateGraph(AgentState)
 
-vector_store = load_and_store_documents("/Users/pranavshukla/Downloads/data science/AgenticAI/LangGraph/agentic-ai-learning/documents/AIML:GenAI:AgenticAI.pdf")
+pdf_path = os.path.join(DOCUMENTS_DIR, "AIML:GenAI:AgenticAI.pdf")
+vector_store = load_and_store_documents(pdf_path)
 
 def set_vector_store(new_vector_store):
     global vector_store

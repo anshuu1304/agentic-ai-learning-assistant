@@ -1,5 +1,9 @@
-
+streamlit
 langgraph
+langgraph-checkpoint-sqlite
+langchain-core
 langchain-google-genai
+langchain-text-splitters
+langchain-chroma
 python-dotenv
 pypdf
